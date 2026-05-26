@@ -24,6 +24,18 @@ The app appears in the macOS menu bar. Hold `fn` to record, release it to send t
 http://127.0.0.1:8000/api/transcribe/
 ```
 
+## Update
+
+Use the packaged app for normal testing. Quit any running copy before opening the rebuilt app:
+
+```bash
+pkill -f DrWisperMac
+./build-app.sh
+open build/DrWisper.app
+```
+
+The menu shows the packaged Git build and executable path. If the path is not `build/DrWisper.app/Contents/MacOS/DrWisperMac`, an old development executable is still running.
+
 When the backend returns text, the app puts it on the pasteboard and simulates `Cmd+V` into the active text field.
 
 ## Permissions

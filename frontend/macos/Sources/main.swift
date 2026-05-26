@@ -2,7 +2,10 @@ import AppKit
 import AVFoundation
 import ApplicationServices
 import Carbon
+import Darwin
 import Foundation
+
+private let appInstanceLock = SingleInstanceLock(identifier: "dev.drwisper.mac")
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -109,6 +112,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Hold fn to dictate", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Backend: \(transcriber.endpoint.absoluteString)", action: nil, keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Build: \(AppInfo.build)", action: nil, keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Path: \(AppInfo.executablePath)", action: nil, keyEquivalent: ""))
 
         menu.addItem(NSMenuItem.separator())
         let quit = NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -280,6 +285,39 @@ final class PasteService {
     }
 }
 
+final class SingleInstanceLock {
+    private let fileDescriptor: Int32
+
+    init?(identifier: String) {
+        let lockPath = "/tmp/\(identifier).lock"
+        fileDescriptor = open(lockPath, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)
+
+        guard fileDescriptor >= 0 else {
+            return nil
+        }
+
+        guard flock(fileDescriptor, LOCK_EX | LOCK_NB) == 0 else {
+            close(fileDescriptor)
+            return nil
+        }
+    }
+
+    deinit {
+        flock(fileDescriptor, LOCK_UN)
+        close(fileDescriptor)
+    }
+}
+
+enum AppInfo {
+    static var build: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "dev"
+    }
+
+    static var executablePath: String {
+        Bundle.main.executablePath ?? CommandLine.arguments.first ?? "unknown"
+    }
+}
+
 struct TranscriptionResponse: Decodable {
     let text: String
 }
@@ -306,5 +344,10 @@ private extension Data {
 
 let app = NSApplication.shared
 let delegate = AppDelegate()
-app.delegate = delegate
-app.run()
+
+if appInstanceLock == nil {
+    NSApp.terminate(nil)
+} else {
+    app.delegate = delegate
+    app.run()
+}

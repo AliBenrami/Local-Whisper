@@ -13,6 +13,8 @@ rm -rf "$APP_DIR"
 mkdir -p "$MACOS_DIR"
 cp ".build/release/DrWisperMac" "$MACOS_DIR/DrWisperMac"
 
+BUILD_VERSION="$(git -C "$SCRIPT_DIR/../.." rev-parse --short HEAD 2>/dev/null || date +%Y%m%d%H%M%S)"
+
 cat > "$CONTENTS_DIR/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -31,7 +33,7 @@ cat > "$CONTENTS_DIR/Info.plist" <<'PLIST'
   <key>CFBundleShortVersionString</key>
   <string>0.1.0</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>__BUILD_VERSION__</string>
   <key>LSMinimumSystemVersion</key>
   <string>14.0</string>
   <key>LSUIElement</key>
@@ -41,5 +43,7 @@ cat > "$CONTENTS_DIR/Info.plist" <<'PLIST'
 </dict>
 </plist>
 PLIST
+
+/usr/bin/sed -i '' "s/__BUILD_VERSION__/$BUILD_VERSION/g" "$CONTENTS_DIR/Info.plist"
 
 echo "$APP_DIR"
