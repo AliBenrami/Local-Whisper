@@ -2,11 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_PATH="$SCRIPT_DIR/build/DrWisper.app"
-INSTALL_PATH="$HOME/Applications/DrWisper.app"
+APP_PATH="$SCRIPT_DIR/build/drWisper.app"
+INSTALL_PATH="$HOME/Applications/drWisper.app"
 LOG_PATH="$HOME/Library/Logs/drWisper/drwisper.log"
 
-pkill -f DrWisperMac 2>/dev/null || true
+pkill -f 'Contents/MacOS/(DrWisperMac|drWisper)' 2>/dev/null || true
 "$SCRIPT_DIR/build-app.sh" >/dev/null
 mkdir -p "$HOME/Applications"
 rm -rf "$INSTALL_PATH"

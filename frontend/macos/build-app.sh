@@ -2,16 +2,17 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_DIR="$SCRIPT_DIR/build/DrWisper.app"
+APP_DIR="$SCRIPT_DIR/build/drWisper.app"
 CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
+EXECUTABLE_NAME="drWisper"
 
 cd "$SCRIPT_DIR"
 swift build -c release
 
 rm -rf "$APP_DIR"
 mkdir -p "$MACOS_DIR"
-cp ".build/release/DrWisperMac" "$MACOS_DIR/DrWisperMac"
+cp ".build/release/DrWisperMac" "$MACOS_DIR/$EXECUTABLE_NAME"
 
 BUILD_VERSION="$(git -C "$SCRIPT_DIR/../.." rev-parse --short HEAD 2>/dev/null || date +%Y%m%d%H%M%S)"
 
@@ -21,7 +22,7 @@ cat > "$CONTENTS_DIR/Info.plist" <<'PLIST'
 <plist version="1.0">
 <dict>
   <key>CFBundleExecutable</key>
-  <string>DrWisperMac</string>
+  <string>drWisper</string>
   <key>CFBundleIdentifier</key>
   <string>dev.drwisper.mac</string>
   <key>CFBundleName</key>
