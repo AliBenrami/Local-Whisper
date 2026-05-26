@@ -38,6 +38,12 @@ open build/DrWisper.app
 
 The menu shows the packaged Git build and executable path. If the path is not `build/DrWisper.app/Contents/MacOS/DrWisperMac`, an old development executable is still running.
 
+Or use the one-command update runner:
+
+```bash
+./update-and-run.sh
+```
+
 When the backend returns text, the app puts it on the pasteboard and simulates `Cmd+V` into the active text field.
 
 ## Permissions
