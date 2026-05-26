@@ -44,6 +44,8 @@ Or use the one-command update runner:
 ./update-and-run.sh
 ```
 
+The update runner installs the app at `~/Applications/DrWisper.app`. Grant Accessibility permission to that installed app, not to the temporary build output.
+
 When the backend returns text, the app puts it on the pasteboard and simulates `Cmd+V` into the active text field.
 
 ## Permissions

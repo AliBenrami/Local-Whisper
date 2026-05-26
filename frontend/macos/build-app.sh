@@ -50,5 +50,6 @@ cat > "$CONTENTS_DIR/Info.plist" <<'PLIST'
 PLIST
 
 /usr/bin/sed -i '' "s/__BUILD_VERSION__/$BUILD_VERSION/g" "$CONTENTS_DIR/Info.plist"
+/usr/bin/codesign --force --deep --sign - "$APP_DIR"
 
 echo "$APP_DIR"
