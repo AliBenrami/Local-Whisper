@@ -1,4 +1,5 @@
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+# RTX 50-series (Blackwell, sm_120) needs CUDA 12.8+ PyTorch wheels (cu128), not cu124.
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04
 
 WORKDIR /app
 
@@ -19,9 +20,8 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip
 RUN python3 -m pip install --upgrade pip
 
-# Install PyTorch CUDA build.
-# Check pytorch.org for the exact latest command for your CUDA version.
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+# PyTorch stable 2.7+ cu128 includes sm_120 (Blackwell) kernels.
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Install app deps
 COPY requirements.txt .

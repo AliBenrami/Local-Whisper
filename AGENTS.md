@@ -7,7 +7,7 @@
 
 # docker
 
-build
+build (CUDA 12.8 / cu128 for RTX 50-series Blackwell GPUs)
 docker build -t whisper-api ./backend
 
 run
