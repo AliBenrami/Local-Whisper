@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var isRecording = false
     private var statusText = "Ready"
+    private var hasShownAccessibilityPasteWarning = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         logger.log("launch build=\(AppInfo.build) path=\(AppInfo.executablePath) pid=\(getpid())")
@@ -103,9 +104,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
 
-            try pasteService.paste(text)
-            logger.log("paste_succeeded")
-            statusText = "Inserted text"
+            do {
+                try pasteService.paste(text)
+                logger.log("paste_succeeded")
+                statusText = "Inserted text"
+            } catch DrWisperError.accessibilityNotTrusted {
+                logger.log("paste_copied_but_accessibility_missing")
+                statusText = "Copied text"
+                statusItem.button?.title = "drWisper"
+                rebuildMenu()
+
+                if !hasShownAccessibilityPasteWarning {
+                    hasShownAccessibilityPasteWarning = true
+                    showError("Copied text; auto-paste needs permission", DrWisperError.accessibilityNotTrusted)
+                }
+                return
+            }
+
             statusItem.button?.title = "drWisper"
             rebuildMenu()
         } catch {
@@ -296,14 +311,14 @@ final class TranscriptionClient {
 
 final class PasteService {
     func paste(_ text: String) throws {
-        guard AXIsProcessTrusted() else {
-            throw DrWisperError.accessibilityNotTrusted
-        }
-
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         guard pasteboard.setString(text, forType: .string) else {
             throw DrWisperError.pasteboardWriteFailed
+        }
+
+        guard AXIsProcessTrusted() else {
+            throw DrWisperError.accessibilityNotTrusted
         }
 
         guard let source = CGEventSource(stateID: .hidSystemState) else {
