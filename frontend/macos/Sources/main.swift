@@ -265,7 +265,7 @@ final class TranscriptionClient {
 
     init() {
         let configured = UserDefaults.standard.string(forKey: "BackendURL")
-        endpoint = URL(string: configured ?? "http://127.0.0.1:8000/api/transcribe/")!
+        endpoint = URL(string: configured ?? "http://http://100.104.229.50:8000/api/transcribe/")!
     }
 
     func transcribe(fileURL: URL) async throws -> String {
