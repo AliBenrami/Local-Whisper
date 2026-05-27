@@ -49,6 +49,8 @@ asr_pipeline = pipeline(
     device=device,
 )
 
+asr_pipeline.tokenizer.clean_up_tokenization_spaces = False
+
 
 ALLOWED_AUDIO_TYPES = {
     "audio/wav",
@@ -84,6 +86,7 @@ async def audioToText(file: UploadFile = File(...), model="openai/whisper-large-
                 "task": "transcribe",
             },
         )
+        
 
         return {
             "text": result["text"]
