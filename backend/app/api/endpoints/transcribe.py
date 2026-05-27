@@ -22,8 +22,10 @@ def ensure_ffmpeg_on_path() -> None:
     shim_dir.mkdir(exist_ok=True)
     shim_path = shim_dir / "ffmpeg"
 
-    if not shim_path.exists():
-        shim_path.symlink_to(ffmpeg_path)
+    if shim_path.exists() or shim_path.is_symlink():
+        shim_path.unlink()
+
+    shim_path.symlink_to(ffmpeg_path)
 
     os.environ["PATH"] = f"{shim_dir}{os.pathsep}{os.environ.get('PATH', '')}"
 
